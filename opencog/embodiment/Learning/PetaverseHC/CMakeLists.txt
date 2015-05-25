@@ -7,7 +7,7 @@ ADD_LIBRARY(PetaverseHC
 TARGET_LINK_LIBRARIES(PetaverseHC
     RewritingRules
     comboreduct
-    ${COGUTIL_LIBRARY}
+    cogutil
     FitnessEstimator
     AvatarComboVocabulary
 )

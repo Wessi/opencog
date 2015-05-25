@@ -15,8 +15,7 @@ IF (HAVE_SERVER)
 	TARGET_LINK_LIBRARIES(PythonModuleUTest
 		PythonModule
 		server
-		atomspace_cython
-		${COGUTIL_LIBRARY}
+		cogutil
 	)
 	SET_TESTS_PROPERTIES(PythonModuleUTest
 		PROPERTIES ENVIRONMENT "PYTHONPATH=${PROJECT_BINARY_DIR}/opencog/cython")
@@ -33,31 +32,31 @@ IF (HAVE_SERVER)
 	TARGET_LINK_LIBRARIES(PyEvalUTest
 		py-shell
 		server
-		atomspace_cython
-		${COGUTIL_LIBRARY}
+		cogutil
 	)
 	SET_TESTS_PROPERTIES(PyEvalUTest
 		PROPERTIES ENVIRONMENT "PYTHONPATH=${PROJECT_BINARY_DIR}/opencog/cython")
-
-	# The PythonEvalUTest tests PythonEval independent of the CogServer.
-	# It depends on the server for some reason but it does not message
-	# through a "py-eval" server request.
-	#
-	ADD_CXXTEST(PythonEvalUTest)
-	CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/tests/cython/pythoneval.conf
-		${PROJECT_BINARY_DIR}/tests/cython/pythoneval.conf)
-
-	TARGET_LINK_LIBRARIES(PythonEvalUTest
-		PythonEval
-		atomspace_cython
-		server
-		${ATOMSPACE_LIBRARIES}
-		${COGUTIL_LIBRARY}
-	)
-	SET_TESTS_PROPERTIES(PythonEvalUTest
-		PROPERTIES ENVIRONMENT "PYTHONPATH=${PROJECT_BINARY_DIR}/opencog/cython")
-
 ENDIF (HAVE_SERVER)
+
+
+# The PythonEvalUTest tests PythonEval independent of the CogServer. It depends
+# on the server being around for the Scheme code but it does not message
+# through a "py-eval" server request.
+#
+ADD_CXXTEST(PythonEvalUTest)
+CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/tests/cython/pythoneval.conf
+	${PROJECT_BINARY_DIR}/tests/cython/pythoneval.conf)
+
+TARGET_LINK_LIBRARIES(PythonEvalUTest
+	atomspace
+	smob
+	server
+	PythonEval
+	cogutil
+)
+SET_TESTS_PROPERTIES(PythonEvalUTest
+	PROPERTIES ENVIRONMENT "PYTHONPATH=${PROJECT_BINARY_DIR}/opencog/cython")
+
 
 # The PythonUtilitiesUTest tests C++ utility functions used from Cython bindings
 # outside of those bindings so failures are easier to debug.
@@ -65,11 +64,10 @@ ENDIF (HAVE_SERVER)
 ADD_CXXTEST(PythonUtilitiesUTest)
 
 TARGET_LINK_LIBRARIES(PythonUtilitiesUTest
+	atomspace
 	PythonEval
+	cogutil
 	utilities_cython
-	atomspace_cython
-	${ATOMSPACE_LIBRARIES}
-	${COGUTIL_LIBRARY}
 )
 SET_TESTS_PROPERTIES(PythonUtilitiesUTest
 	PROPERTIES ENVIRONMENT "PYTHONPATH=${PROJECT_BINARY_DIR}/opencog/cython")
@@ -101,7 +99,7 @@ IF (HAVE_NOSETESTS)
 		ADD_TEST(CythonBindlink ${NOSETESTS_EXECUTABLE} -vs
 			${CMAKE_SOURCE_DIR}/tests/cython/bindlink/)
 		SET_TESTS_PROPERTIES(CythonBindlink
-			PROPERTIES ENVIRONMENT "PYTHONPATH=${PROJECT_BINARY_DIR}/opencog/cython:${PROJECT_SOURCE_DIR}/opencog/python")
+			PROPERTIES ENVIRONMENT "PYTHONPATH=${PROJECT_BINARY_DIR}/opencog/cython")
 	ENDIF (HAVE_ATOMSPACE)
 
 	IF (HAVE_ATOMSPACE AND HAVE_GUILE)

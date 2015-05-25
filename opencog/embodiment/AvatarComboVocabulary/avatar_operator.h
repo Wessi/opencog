@@ -24,8 +24,8 @@
 #ifndef _AVATAR_OPERATOR_H
 #define _AVATAR_OPERATOR_H
 
-#include <moses/comboreduct/combo/operator_base.h>
-#include <moses/comboreduct/type_checker/type_tree.h>
+#include <opencog/comboreduct/combo/operator_base.h>
+#include <opencog/comboreduct/type_checker/type_tree.h>
 
 namespace opencog { namespace combo {
 

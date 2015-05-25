@@ -11,6 +11,9 @@ cdef extern :
     cdef void embodiment_types_init() 
 
 cdef extern :
+    cdef void pln_types_init() 
+
+cdef extern :
     cdef void spacetime_types_init() 
 
 
@@ -58,6 +61,7 @@ def is_a(Type t1, Type t2):
 
 cdef generate_type_module():
     nlp_types_init()
+    pln_types_init()
     attention_types_init()
     spacetime_types_init()
     embodiment_types_init()

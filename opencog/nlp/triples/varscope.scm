@@ -36,7 +36,7 @@
 			(vars (delete-duplicates! all-vars))
 		)
 		(BindLink
-			(VariableList
+			(ListLink
 				vars
 			)
 			impl

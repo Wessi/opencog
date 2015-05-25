@@ -12,8 +12,8 @@ LINK_LIBRARIES(
 	viterbi
 	lg-dict
 	nlp-types
-	${ATOMSPACE_LIBRARY}
-	${ATOMSPACE_query_LIBRARY}
+	atomspace
+	query
 	server
 	${LINK_GRAMMAR_LIBRARY}
 )

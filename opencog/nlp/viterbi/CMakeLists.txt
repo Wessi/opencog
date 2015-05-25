@@ -3,8 +3,7 @@ OPENCOG_ADD_ATOM_TYPES(atom_types.script
 	atom_types.h
 	atom_types.definitions
 	atom_types.inheritance
-	viterbi_types.scm
-	viterbi_types.pyx)
+	viterbi_types.scm) 
 
 ADD_CUSTOM_TARGET(viterbi_atom_types DEPENDS atom_types.h)
 
@@ -23,8 +22,8 @@ ADD_DEPENDENCIES(viterbi viterbi_atom_types)
 
 TARGET_LINK_LIBRARIES(viterbi
 	lg-dict
-	${ATOMSPACE_query_LIBRARY}
-	${ATOMSPACE_LIBRARY}
+	query
+	atomspace
 	${LINK_GRAMMAR_LIBRARIES}
 )
 

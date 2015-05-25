@@ -53,11 +53,11 @@ bool LoadModuleRequest::execute()
     std::string& filename = _parameters.front();
 
     if (_cogserver.loadModule(filename)) {
-        oss << "done" << std::endl;
+        oss << "Hi Wessi done successfully!" << std::endl;
         send(oss.str());
         return true;
     } else {
-        oss << "Unable to load module \"" << filename << "\". Check the server logs for details." << std::endl;
+        oss << "Hi Wessi UUU\'r Unable to load module \"" << filename << "\". Check the server logs for details." << std::endl;
         send(oss.str());
         return false;
     }

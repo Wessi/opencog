@@ -3,7 +3,7 @@ LINK_LIBRARIES(
 	AtomSpaceExtensions
 	spacetime
 	server
-	${ATOMSPACE_LIBRARY}
+	atomspace
 )
 
 ADD_CXXTEST(AtomSpaceUtilUTest)

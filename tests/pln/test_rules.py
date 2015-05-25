@@ -139,15 +139,15 @@ class PLNUnitTester(TestCase):
         atomspaceToReset.clear()
 
         # Default to dev mode
-        coreTypes = "opencog/scm/core_types.scm"
-        utilities = "opencog/scm/utilities.scm"
-        plnTypes = "opencog/reasoning/pln/pln_types.scm"
+        coreTypes = "atomspace/core_types.scm"
+        utilities = "scm/utilities.scm"
+        plnTypes = "reasoning/pln/pln_types.scm"
 
         if not __DEV_MODE__:
             coreTypes = os.path.join(test_pln_directory, 
-                    'opencog/scm/core_types.scm')
+                    '../../../build/opencog/atomspace/core_types.scm')
             utilities = os.path.join(test_pln_directory, 
-                    'opencog/scm/utilities.scm')
+                    '../../../opencog/scm/utilities.scm')
             plnTypes = os.path.join(test_pln_directory, 
                     '../../../build/opencog/reasoning/pln/pln_types.scm')
 

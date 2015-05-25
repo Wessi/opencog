@@ -50,7 +50,6 @@ cdef extern from "opencog/atomspace/TruthValue.h" namespace "opencog":
 
 cdef extern from "opencog/atomspace/SimpleTruthValue.h" namespace "opencog":
     cdef cppclass cSimpleTruthValue "opencog::SimpleTruthValue":
-        void initialize(float,float)
         cSimpleTruthValue(float, float)
         strength_t getMean()
         confidence_t getConfidence()
@@ -100,15 +99,6 @@ cdef extern from "opencog/atomspace/Handle.h" namespace "opencog":
 # HandleSeq
     cdef cppclass cHandleSeq "opencog::HandleSeq"
 
-cdef class TruthValue:
-    cdef tv_ptr *cobj
-    cdef _mean(self)
-    cdef _confidence(self)
-    cdef _count(self)
-    cdef cTruthValue* _ptr(self)
-    cdef tv_ptr* _tvptr(self)
-    cdef _init(self, float mean, float count)
-    
 cdef class Handle:
     cdef cHandle *h
 
@@ -192,17 +182,4 @@ cdef extern from "opencog/spacetime/SpaceServer.h" namespace "opencog":
 cdef extern from "opencog/spacetime/TimeServer.h" namespace "opencog":
     cdef cppclass cTimeServer "opencog::TimeServer":
         TimeServer()
-
-
-cdef extern from "opencog/atomutils/AtomUtils.h" namespace "opencog":
-    # C++: 
-    #   
-    #   HandleSeq get_predicates(const Handle& target, 
-    #                     Type predicateType=PREDICATE_NODE,
-    #                     bool subClasses=true)
-    #   void finalize_opencog();
-    #   void configuration_load(const char* configFile);
-    #
-    cdef vector[cHandle] c_get_predicates "get_predicates" (cHandle& target, Type t, bint subclass)
-    cdef vector[cHandle] c_get_predicates_for "get_predicates_for" (cHandle& target, cHandle& predicate)
 

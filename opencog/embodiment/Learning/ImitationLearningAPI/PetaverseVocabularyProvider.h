@@ -34,10 +34,8 @@
 #ifndef _PETAVERSE_VOCABULARY_PROVIDER_BASE_H
 #define _PETAVERSE_VOCABULARY_PROVIDER_BASE_H
 
-#include <moses/comboreduct/combo/vertex.h>
+#include <opencog/comboreduct/combo/vertex.h>
 #include <opencog/embodiment/AvatarComboVocabulary/AvatarComboVocabulary.h>
-
-// namespace opencog { namespace embodiment {
 
 class PetaverseVocabularyProviderBase
 {
@@ -67,6 +65,4 @@ public:
     virtual const indefinite_object_set& get_indefinite_objects() const = 0;
 };
 
-
-		
 #endif

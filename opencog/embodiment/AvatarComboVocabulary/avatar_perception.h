@@ -26,7 +26,7 @@
 
 #include <opencog/util/numeric.h>
 
-#include <moses/comboreduct/combo/perception.h>
+#include <opencog/comboreduct/combo/perception.h>
 #include "avatar_operator.h"
 
 namespace opencog { namespace combo {

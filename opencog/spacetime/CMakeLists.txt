@@ -2,8 +2,7 @@ OPENCOG_ADD_ATOM_TYPES(atom_types.script
    atom_types.h
    atom_types.definitions
    atom_types.inheritance
-   spacetime_types.scm
-   spacetime_types.pyx)
+   spacetime_types.scm)
 ADD_CUSTOM_TARGET(spacetime_atom_types DEPENDS atom_types.h)
 
 ADD_LIBRARY (spacetime-types SHARED
@@ -27,8 +26,7 @@ ADD_LIBRARY (spacetime SHARED
 	TimeServer.cc
 )
 
-TARGET_LINK_LIBRARIES(spacetime spacetime-types SpaceMap server
-	${ATOMSPACE_LIBRARIES})
+TARGET_LINK_LIBRARIES(spacetime spacetime-types SpaceMap server atomspace)
 
 INSTALL (FILES
 	HandleToTemporalEntryMap.h

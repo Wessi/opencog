@@ -1,4 +1,4 @@
-from atomspace cimport cTruthValue, tv_ptr
+from atomspace cimport *
 
 cdef class TruthValue:
     """ The truth value represents the strength and confidence of
@@ -9,8 +9,9 @@ cdef class TruthValue:
         @todo Support IndefiniteTruthValue, DistributionalTV, NullTV etc
     """
     # This stores a pointer to a smart pointer to the C++ TruthValue object
-    # Declared in atomspace.pxd
-    # cdef tv_ptr *cobj
+    # This indirection is unfortunately necessary because cython doesn't
+    # allow C++ objects on the stack
+    cdef tv_ptr *cobj
 
     def __cinit__(self, strength=0.0, count=0.0):
         # By default create a SimpleTruthValue
@@ -37,12 +38,6 @@ cdef class TruthValue:
 
     cdef _count(self):
         return self._ptr().getCount()
-
-    cdef _init(self, float mean, float count):
-        deref((<cSimpleTruthValue*>self._ptr())).initialize(mean, count)
-
-    def set_value(self, mean, count):
-        self._init(mean, count)
 
     def __richcmp__(TruthValue h1, TruthValue h2, int op):
         " @todo support the rest of the comparison operators"

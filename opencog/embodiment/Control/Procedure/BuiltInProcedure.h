@@ -28,9 +28,9 @@
  * @author Welter Luigi
  *
  */
-#include <list>
-#include <moses/comboreduct/combo/vertex.h>
 #include "GeneralProcedure.h"
+#include <opencog/comboreduct/combo/vertex.h>
+#include <list>
 
 namespace opencog { namespace Procedure {
 

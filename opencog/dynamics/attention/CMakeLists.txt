@@ -6,8 +6,7 @@ OPENCOG_ADD_ATOM_TYPES(atom_types.script
 	atom_types.h
 	atom_types.definitions
 	atom_types.inheritance
-	attention_types.scm
-	attention_types.pyx)
+	attention_types.scm)
 ADD_CUSTOM_TARGET(attention_atom_types DEPENDS atom_types.h)
 
 # The atom_types.h file is written to the build directory
@@ -21,9 +20,7 @@ ADD_LIBRARY(attention-types SHARED
 ADD_DEPENDENCIES(attention-types opencog_atom_types)
 ADD_DEPENDENCIES(attention-types attention_atom_types)
 
-TARGET_LINK_LIBRARIES(attention-types
-	${ATOMSPACE_LIBRARY}
-)
+TARGET_LINK_LIBRARIES(attention-types atomspace)
 
 # --------------------------------------------------
 # AttentionModule
@@ -38,7 +35,7 @@ ADD_LIBRARY(attention SHARED
 	ImportanceUpdatingAgent
 )
 
-TARGET_LINK_LIBRARIES(attention server ${ATOMSPACE_LIBRARIES})
+TARGET_LINK_LIBRARIES(attention server atomutils atomspace)
 
 # HebbianCreationModule
 IF (TBB_FOUND)

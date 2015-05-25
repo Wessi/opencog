@@ -52,7 +52,7 @@
 #include <opencog/util/platform.h>
 
 #ifdef HAVE_SQL_STORAGE
-#include <opencog/modules/PersistModule.h>
+#include <opencog/persist/sql/PersistModule.h>
 #endif /* HAVE_SQL_STORAGE */
 
 #include "CogServer.h"
@@ -140,8 +140,8 @@ CogServer::CogServer() : cycleCount(1)
     atomSpace = new AtomSpace();
 #ifdef HAVE_GUILE
     // Tell scheme which atomspace to use.
-    SchemeEval::init_scheme();
-    SchemeEval::set_scheme_as(atomSpace);
+    SchemeEval* se = new SchemeEval(atomSpace);
+    delete se;
 #endif // HAVE_GUILE
 #ifdef HAVE_CYTHON
     // Initialize Python.
@@ -674,13 +674,8 @@ Module* CogServer::getModule(const std::string& moduleId)
 
 void CogServer::loadModules(std::vector<std::string> module_paths)
 {
-    if (module_paths.empty()) {
-        // Sometimes paths are given without the "opencog" part.
-        for (auto p : DEFAULT_MODULE_PATHS) {
-            module_paths.push_back(p);
-            module_paths.push_back(p + "/opencog");
-        }
-    }
+    if (module_paths.empty())
+        module_paths = DEFAULT_MODULE_PATHS;
 
     // Load modules specified in the config file
     std::vector<std::string> modules;
@@ -709,14 +704,8 @@ void CogServer::loadModules(std::vector<std::string> module_paths)
 void CogServer::loadSCMModules(std::vector<std::string> module_paths)
 {
 #ifdef HAVE_GUILE
-    if (module_paths.empty()) {
-        // Sometimes paths are given without the "opencog" part.
-        for (auto p : DEFAULT_MODULE_PATHS) {
-            module_paths.push_back(p);
-            module_paths.push_back(p + "/opencog");
-        }
-    }
-
+    if (module_paths.empty())
+        module_paths = DEFAULT_MODULE_PATHS;
 
     load_scm_files_from_config(*atomSpace, module_paths);
 #else /* HAVE_GUILE */

@@ -25,7 +25,7 @@
 #include "HandleToTemporalEntryMap.h"
 
 #include <opencog/atomspace/Atom.h>
-#include <opencog/atomutils/HandleMap.h>
+#include <opencog/atomspace/HandleMap.h>
 
 using namespace opencog;
 

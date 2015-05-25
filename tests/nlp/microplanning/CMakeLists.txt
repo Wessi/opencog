@@ -11,7 +11,7 @@ LINK_DIRECTORIES(
 )
 
 LINK_LIBRARIES(
-	${ATOMSPACE_LIBRARY}
+	atomspace
 	server
 )
 

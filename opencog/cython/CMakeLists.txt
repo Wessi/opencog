@@ -21,6 +21,7 @@ INCLUDE_DIRECTORIES(
 # https://github.com/OpenKinect/libfreenect/blob/master/wrappers/python/CMakeLists.txt
 
 
+
 # direct file and path creation for stuff that doesn't need to be compiled
 file(MAKE_DIRECTORY opencog)
 # module init
@@ -34,10 +35,28 @@ ADD_LIBRARY(PythonEval SHARED
 ADD_DEPENDENCIES(PythonEval atomspace_cython agent_finder)
 
 TARGET_LINK_LIBRARIES(PythonEval
-	${ATOMSPACE_LIBRARIES}
 	${PYTHON_LIBRARIES}
 )
 
+
+# Python module to be loaded by CogServer
+ADD_LIBRARY (PythonModule SHARED
+	PythonModule.cc 
+	PyMindAgent.cc
+	PyRequest.cc
+)
+
+TARGET_LINK_LIBRARIES(PythonModule
+	PythonEval
+	server
+	${PYTHON_LIBRARIES}
+)
+ADD_DEPENDENCIES(PythonModule agent_finder)
+
+IF (WIN32)
+	INSTALL (TARGETS PythonModule DESTINATION "lib${LIB_DIR_SUFFIX}/opencog")
+ENDIF (WIN32)
 INSTALL (FILES 
 	opencog/__init__.py
 	DESTINATION "${DATADIR}/python/opencog")
+

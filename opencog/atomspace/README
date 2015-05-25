@@ -1,0 +1,194 @@
+
+                   AtomSpace README
+                   ----------------
+
+The README contains miscellaneous notes about the atomspace. 
+
+======================================================================
+======================================================================
+======================================================================
+
+                      Adding atom types
+                      -----------------
+
+The ClassServer provides a primitive extension mechanism so that
+modules/agents/libraries may add new atom types to the default type
+hierarchy. In order to ease the task of third-parties wishing to extend
+the ClassServer, we provide a cmake macro that generates a set of
+files with c++ code that can be used by the module/library.
+
+The macro uses a 'type script' file as input which uses the following
+format:
+
+<TYPE> [<- <PARENT_TYPE1>[,<PARENT_TYPE2>,<PARENT_TYPE3>,...]] ["<TYPE_NAME>"]
+
+Where
+
+    TYPE is an identifier that will be used in your code to reference
+    the type's numeric code. Usually, it is defined using capital
+    letters and underscores as its semantics is close to that of C/C++
+    constant.
+
+    PARENT_TYPE1, PARENT_TYPE1, PARENT_TYPE2 are optional identifiers of
+    the parent types of the defined type. When more than one parent type
+    is specified, they must be separated by commas.
+
+    TYPE_NAME is a string that will be used to identify the type. If
+    none is supplied, the cmake macro will generate one based on the
+    type's identifer using camel-casing patterns (for instance,
+    CUSTOM_NODE would be named "CustomNode").
+
+Above is a short snippet of valid script entries. For more examples,
+check the atom_types.script file.
+
+ATOM
+NODE <- ATOM
+LINK <- ATOM
+WORD_NODE <- NODE
+CONCEPT_NODE <- NODE "OddlyNamedNode"
+ASSOCIATIVE_LINK <- LINK "AssocL"
+EVALUATION_LINK <- LINK "EvalLink"
+MULTIPARENT_LINK <- ASSOCIATIVE_LINK_LINK,EVALUATION_LINK "MPLink"
+
+-----
+To process the 'atom types' script file, one must add the macro
+OPENCOG_ADD_ATOM_TYPES to the CMakeLists.txt and the header file to the
+list of source files:
+
+# CMakeList.txt
+OPENCOG_ADD_ATOM_TYPES(atom_types.script atom_types.h atom_types.definitions atom_types.inheritance)
+
+ADD_LIBRARY(sample SHARED
+    atom_types.h
+    Sample1.cc
+    Sample2.cc
+    ...
+)
+
+The macro OPENCOG_ADD_ATOM_TYPES expects 4 parameters:
+
+    1. the filename of the script file that will be used as input
+    2. the filename of the header file that will be generated with
+       the identifiers of the new atom types. 
+    3. the filename of the definitions file that will be generated with
+       the instantiations of the variables that will store the new atom
+       types. 
+    4. the filename of the inheritance file that will be generated with
+       the set of method invocations that will build the type hierarchy
+       inside the ClassServer.
+
+To properly *use* the generated files, the following conventions should be
+followed:
+
+  * include the definitions file right after the standard '#include'
+    statement of the file with the code that initializes your module/agent/library.
+
+  * include the inheritance file *inside the body* of the routine
+    initializing the module/agent/library.
+
+  * include the header file by any files that references the identifier
+    of the a new atom type.
+
+For instance:
+
+// MyModule.cc
+#include "MyModule.h"
+#include "AnotherHeader.h"
+#include "atom_types.definitions"
+MyModule::MyModule() {}
+...
+static __attribute__ ((constructor)) void _init(void)
+{
+    #include "atom_types.inheritance"
+}
+
+
+// AnotherFile.cc
+#include "AnotherFile.h"
+#include "atom_types.h"
+#include "YetAnotherFile.h"
+
+void AnotherFile::someMethod() {
+    ...
+    std::string name = opencog::ClassServer::getTypeName(opencog::MYNODE);
+    ...
+}
+
+-----
+For a fully functional example, check the ''examples/atomtypes/' directory.
+
+
+======================================================================
+======================================================================
+======================================================================
+
+                   Garbage Collection Design
+                   -------------------------
+
+As of October/November 2013, Handles use std::shared_pointer to deal
+with memory management, and so using GC is no longer urgent.  The
+shared_pointers seem to work OK, for now.  Based on performance
+measurements, however, shared pointers are 3x slower than GC could be
+(compare the AtomTable results for April and November 2013 in the
+opencog/benchmark/diary.txt file, which show a rough 3x slowdown.)
+
+Without garbage collection (or smart pointers) it becomes unsafe to use
+bare pointers in a multi-threaded environment.  With garbage collection
+(or smart pointers), and a reasonably good design and coding style, the
+use of bare pointers in a multi-threaded environment becomes safe. In
+what follows, smart poiners will not be considered because they are 
+(1) generally slower (2) use significantly more RAM (40 bytes per
+pointer, instead of 8 bytes, as well as additional bytes for the
+counter itself.)
+
+The smart-pointer design takes into account the cyclic references in
+the IncomingSet by using std::weak_ptr there.  This is a potential
+stubling block for GC as well (?? or is it? Not sure, mayb Boehm
+deals with islands just fine.)
+
+TODO:
+-- Conditionally add boehm GC
+-- Convert outgoing set to hold Atom* (Done, Sept 2013)
+-- Add locks to getHandleSet (Done, October 2013)
+-- Add threading to benchmark
+
+
+======================================================================
+======================================================================
+======================================================================
+
+                       Threading Design
+                       ----------------
+
+As of November 2013, all atomspace operations should be thread-safe.
+This includes all AtomSpace API calls, and all public methods on Atoms,
+Links, Nodes, truth and attention values.  Thread-safety is mildly
+tested in AtomSpaceAsyncUTest but more robust threading tests would be
+great.  In addition, comprehensive multi-threaded benchmarks are sorely
+needed.
+
+The AtomTable::getHandlesByXXX() methods offer a great opportunity for
+adding parallelism.  Currently, they use std::copy_if(), which can be
+replaced by OMP_ALGO versions, and including oc_omp.h. For examples on
+how this is done in practice, grep the moses code. Its actually quite
+very easy; I haven't done so out of laziness mostly (and the greedy
+desire for a benchmark).
+
+The AtomTable uses a single global lock, and it potentially causes
+significant contention in a highly-threaded environment. This could be
+fixed by converting it to a reader-writer lock, using readers for the
+getHandles calls, and writer for the add/remove Atom calls.
+
+The atoms are all using a per-atom lock, and thus should have no
+contention (although this is a bit RAM-greedy, but what the heck --
+the alternative of one global lock would be a huge bottleneck.)
+
+The ClassServer() uses a reader-writer lock when fetching info.
+If would be great to make this lockless somehow, since, realistically,
+absolutely no one ever adds new atom types, once the cogserver has been
+initialized. i.e. we're using a lock to protect a case that never
+happens in real life.
+
+
+======================================================================
+======================================================================

@@ -29,7 +29,7 @@
 
 #include <stdio.h>
 
-#include <opencog/atomutils/HandleMap.h>
+#include <opencog/atomspace/HandleMap.h>
 
 namespace opencog
 {

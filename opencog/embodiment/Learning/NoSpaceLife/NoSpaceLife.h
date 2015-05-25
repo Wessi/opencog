@@ -24,7 +24,7 @@
 #ifndef _NOSPACELIFE_H
 #define _NOSPACELIFE_H
 
-#include <moses/comboreduct/combo/vertex.h>
+#include <opencog/comboreduct/combo/vertex.h>
 
 #include <opencog/atomspace/AtomSpace.h>
 #include <opencog/embodiment/Learning/behavior/CompositeBehaviorDescription.h>

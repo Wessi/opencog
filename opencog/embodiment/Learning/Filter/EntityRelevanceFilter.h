@@ -28,7 +28,7 @@
 #include <vector>
 #include <string>
 
-#include <moses/comboreduct/combo/vertex.h>
+#include <opencog/comboreduct/combo/vertex.h>
 #include <opencog/atomspace/AtomSpace.h>
 #include <opencog/spacetime/SpaceServer.h>
 

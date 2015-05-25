@@ -188,25 +188,9 @@ void opencog::global_python_initialize()
     import_opencog__atomspace();
     import_opencog__agent_finder();
 
-    // The import_opencog__atomspace() call above sets the
-    // py_atomspace() function pointer if the cython module load
-    // succeeded. But the function pointer will be NULL if the
-    // opencopg.atomspace cython module failed to load. Avert
-    // a hard-to-debug crash on null-pointer-deref, and replace
-    // it by a hard-to-debug error message.
-    if (NULL == py_atomspace) {
-        PyErr_Print();
-        logger().error("PythonEval::%s Failed to load"
-                       "the opencog.atomspace module", __FUNCTION__);
-    }
-
     // Now we can use get_path_as_string() to get 'sys.path'
-    // But only if import_opencog__atomspace() suceeded without error.
-    // When it fails, it fails silently, leaving get_path_as_string with
-    // a NULL PLT/GOT entry
-    if (NULL != get_path_as_string)
-        logger().info("Python 'sys.path' after OpenCog config adds is: " +
-               get_path_as_string());
+    logger().info("Python 'sys.path' after OpenCog config adds is: " +
+            get_path_as_string());
 
     // NOTE: PySys_GetObject returns a borrowed reference so don't do this:
     // Py_DECREF(pySysPath);
@@ -361,17 +345,8 @@ void PythonEval::initialize_python_objects_and_imports(void)
 
 PyObject* PythonEval::atomspace_py_object(AtomSpace* atomspace)
 {
-    // The py_atomspace function pointer will be NULL if the
-    // opencopg.atomspace cython module failed to load. Avert
-    // a hard-to-debug crash on null-pointer-deref, and replace
-    // it by a hard-to-debug error message.
-    if (NULL == py_atomspace) {
-        logger().error("PythonEval::%s Failed to load"
-                       "the opencog.atomspace module", __FUNCTION__);
-        return NULL;
-    }
-
     PyObject * pyAtomSpace;
+
     if (atomspace)
         pyAtomSpace = py_atomspace(atomspace);
     else
@@ -546,14 +521,6 @@ PyObject* PythonEval::call_user_function(   const std::string& moduleFunction,
     // Get the module and stripped function name.
     pyModule = this->module_for_function(moduleFunction, functionName);
 
-    // If we can't find that module then throw an exception.
-    if (!pyModule) {
-        PyGILState_Release(gstate);
-        logger().error("Python module for '%s' not found!", moduleFunction.c_str());
-        throw (RuntimeException(TRACE_INFO, "Python module for '%s' not found!",
-                moduleFunction.c_str()));
-    }
-        
     // Get a reference to the user function.
     pyDict = PyModule_GetDict(pyModule);
     pyUserFunc = PyDict_GetItemString(pyDict, functionName.c_str());

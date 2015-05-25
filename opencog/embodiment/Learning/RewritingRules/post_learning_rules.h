@@ -24,7 +24,7 @@
 #ifndef _POST_LEARNING_RULES_H
 #define _POST_LEARNING_RULES_H
 
-#include <moses/comboreduct/reduct/reduct.h>
+#include <opencog/comboreduct/reduct/reduct.h>
 
 namespace opencog { namespace reduct {
 

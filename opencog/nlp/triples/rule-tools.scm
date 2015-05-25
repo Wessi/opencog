@@ -490,7 +490,7 @@
 
 		; The Big Kahuna -- a list of variables, and the implication.
 		(BindLink
-			(VariableList pv ff)
+			(ListLink pv ff)
 			(ImplicationLink 
 				(AndLink pc)
 				ic
@@ -509,7 +509,7 @@
 ;
 (define (r-schema schema-name . args)
 	(define lnk
-		(ExecutionOutputLink
+		(ExecutionLink
 			(GroundedSchemaNode schema-name)
 			(ListLink
 				(map VariableNode args)

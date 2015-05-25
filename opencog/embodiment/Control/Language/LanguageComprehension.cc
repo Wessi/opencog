@@ -95,7 +95,7 @@ void LanguageComprehension::init( void )
 #ifdef HAVE_GUILE
         // Ensure SchemeEval is initialised with AtomSpace.
         opencog::AtomSpace& as = this->agent.getAtomSpace();
-        evaluator = SchemeEval::get_evaluator(&as);
+        evaluator = new SchemeEval(&as);
         
         std::stringstream script;
         script << "(define agentSemeNode (SemeNode \"";

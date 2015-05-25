@@ -40,13 +40,14 @@ using namespace opencog;
  * @param vars   the set of nodes that should be treated as variables
  */
 SuRealPMCB::SuRealPMCB(AtomSpace* pAS, const std::set<Handle>& vars)
-    : DefaultPatternMatchCB(pAS), m_vars(vars), m_eval(SchemeEval::get_evaluator(pAS))
+    : DefaultPatternMatchCB(pAS), m_vars(vars), m_eval(new SchemeEval(pAS))
 {
 
 }
 
 SuRealPMCB::~SuRealPMCB()
 {
+    delete m_eval;
 }
 
 /**
@@ -301,9 +302,9 @@ bool SuRealPMCB::grounding(const std::map<Handle, Handle> &var_soln, const std::
 }
 
 /**
- * Implement the initiate_search method.
+ * Implement the perform_search method.
  *
- * Similar to DefaultPatternMatcherCB::initiate_search, in which we start search
+ * Similar to DefaultPatternMatcherCB::perform_search, in which we start search
  * by looking at the thinnest clause with constants.  However, since most clauses
  * for SuReal will have 0 constants, most searches will require looking at all
  * the links.  This implementation improves that by looking at links within a
@@ -315,19 +316,40 @@ bool SuRealPMCB::grounding(const std::map<Handle, Handle> &var_soln, const std::
  * @param clauses    the clauses for the query
  * @param negations  the negative clauses
  */
-bool SuRealPMCB::initiate_search(PatternMatchEngine* pPME,
-                                const Variables& vars,
-                                const Pattern& pat)
+void SuRealPMCB::perform_search(PatternMatchEngine* pPME,
+                                const std::set<Handle>& vars,
+                                const HandleSeq& clauses,
+                                const HandleSeq& negations)
 {
-    _search_fail = false;
-    if (not vars.varset.empty())
+    size_t bestClauseIndex;
+    Handle bestClause, bestSubClause, bestSubNode;
+
+    // find the thinnest clause with constants
+    bestSubNode = find_thinnest(clauses, bestSubClause, bestClauseIndex);
+
+    if (bestSubNode != Handle::UNDEFINED && !vars.empty())
     {
-        bool found = neighbor_search(pPME, vars, pat);
-        if (not _search_fail) return found;
+        bestClause = clauses[bestClauseIndex];
+
+        logger().debug("[SuReal] Search start node: %s", bestSubNode->toShortString().c_str());
+        logger().debug("[SuReal] Start pred is: %s", bestSubClause->toShortString().c_str());
+
+        IncomingSet iset = get_incoming_set(bestSubNode);
+
+        for (auto& l : iset)
+        {
+            Handle h(l);
+            logger().debug("[SuReal] Loop candidate: %s", h->toShortString().c_str());
+
+            if (pPME->do_candidate(bestClause, bestSubClause, h))
+                break;
+        }
+
+        return;
     }
 
-    // Reaching here means no contants, so do some search space reduction here
-    Handle bestClause = pat.mandatory[0];
+    // reaching here means no contants, so do some search space reduction here
+    bestClause = clauses[0];
 
     logger().debug("[SuReal] Start pred is: %s", bestClause->toShortString().c_str());
 
@@ -355,10 +377,9 @@ bool SuRealPMCB::initiate_search(PatternMatchEngine* pPME,
     {
         logger().debug("[SuReal] Loop candidate: %s", c->toShortString().c_str());
 
-        if (pPME->explore_neighborhood(bestClause, bestClause, c))
-            return true;
+        if (pPME->do_candidate(bestClause, bestClause, c))
+            break;
     }
-    return false;
 }
 
 /**
@@ -374,7 +395,7 @@ bool SuRealPMCB::initiate_search(PatternMatchEngine* pPME,
  * @return        same as DefaultPatternMatchCB::find_starter but change
  *                the result if is a variable
  */
-Handle SuRealPMCB::find_starter(const Handle& h, size_t& depth, Handle& start, size_t& width)
+Handle SuRealPMCB::find_starter(Handle h, size_t& depth, Handle& start, size_t& width)
 {
     Handle rh = DefaultPatternMatchCB::find_starter(h, depth, start, width);
 

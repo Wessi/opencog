@@ -8,7 +8,7 @@ ADD_LIBRARY(lslib
 )
 
 ADD_LIBRARY(TestPatternMinerAgent SHARED
-	TestPatternMinerAgent
+        TestPatternMinerAgent
 )
 
 TARGET_LINK_LIBRARIES (TestPatternMinerAgent
@@ -32,23 +32,17 @@ SET(EXE_LINK_LIBS
 	MessagingSystem
 	LearningServerMessages
 	Control
-	Filter
-	FitnessEstimator
-	Procedure
-	RewritingRules
-	moses
-	feature_selection
-	moses
-	${COGUTIL_LIBRARY}
-	comboant
+	cogutil
 	comboreduct
 	pthread
-	${Boost_REGEX_LIBRARY}
-	${Boost_THREAD_LIBRARY}
+	Filter
+	FitnessEstimator
+	# Procedure
+	RewritingRules
 )
 
 IF (HAVE_GUILE)
-   SET(EXE_LINK_LIBS ${ATOMSPACE_LIBRARIES} ${EXE_LINK_LIBS})
+   SET(EXE_LINK_LIBS smob ${EXE_LINK_LIBS})
 ENDIF (HAVE_GUILE)
 
 ADD_EXECUTABLE (learningServer LSExecutable)

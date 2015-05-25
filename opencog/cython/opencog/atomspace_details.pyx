@@ -7,10 +7,6 @@ from atomspace cimport *
 # @todo use the guide here to separate out into a hierarchy
 # http://wiki.cython.org/PackageHierarchy
     
-cdef api string get_path_as_string() with gil:
-    import sys
-    cdef bytes c_str = str(sys.path)
-    return string(c_str)
 
 cdef convert_handle_seq_to_python_list(vector[cHandle] handles, AtomSpace atomspace):
     cdef vector[cHandle].iterator iter
@@ -55,23 +51,6 @@ cdef class AtomSpace:
     def __dealloc__(self):
         if self.owns_atomspace:
             del self.atomspace
-
-    def __richcmp__(as_1, as_2, int op):
-        if not isinstance(as_1, AtomSpace) or not isinstance(as_2, AtomSpace):
-            return NotImplemented
-        cdef AtomSpace atomspace_1 = <AtomSpace>as_1
-        cdef AtomSpace atomspace_2 = <AtomSpace>as_1
-
-        cdef cAtomSpace* c_atomspace_1 = atomspace_1.atomspace
-        cdef cAtomSpace* c_atomspace_2 = atomspace_2.atomspace
-        
-        is_equal = True
-        if c_atomspace_1 != c_atomspace_2:
-            is_equal = False
-        if op == 2: # ==
-            return is_equal
-        elif op == 3: # !=
-            return not is_equal
 
     def add(self, Type t, name=None, out=None, TruthValue tv=None, prefixed=False):
         """ add method that determines exact method to call from type """
@@ -405,56 +384,6 @@ cdef class AtomSpace:
         cdef Handle target_h = target_atom.h
         self.atomspace.getIncomingSetByType(back_inserter(handle_vector),deref(target_h.h),t,subt)
 
-        # This code is the same for all the x iterators but there is no
-        # way in Cython to yield out of a cdef function and no way to pass a 
-        # vector into a Python def function, so we have to repeat code. ARGGG!
-        cdef vector[cHandle].iterator c_handle_iter
-        cdef cHandle current_c_handle
-        c_handle_iter = handle_vector.begin()
-        while c_handle_iter != handle_vector.end():
-            current_c_handle = deref(c_handle_iter)
-            temp_handle = Handle(current_c_handle.value())
-            yield Atom(temp_handle,self)
-            inc(c_handle_iter)
-
-    def get_predicates(self, Atom target, Type predicate_type = types.PredicateNode, subclasses=True):
-        cdef vector[cHandle] handle_vector
-        cdef bint want_subclasses = subclasses
-        cdef Handle target_h = target.h
-        handle_vector = c_get_predicates(deref(target_h.h), predicate_type, want_subclasses)
-        return convert_handle_seq_to_python_list(handle_vector,self)
-
-    def xget_predicates(self, Atom target, Type predicate_type = types.PredicateNode, subclasses=True):
-        cdef vector[cHandle] handle_vector
-        cdef bint want_subclasses = subclasses
-        cdef Handle target_h = target.h
-        handle_vector = c_get_predicates(deref(target_h.h), predicate_type, want_subclasses)
-        
-        # This code is the same for all the x iterators but there is no
-        # way in Cython to yield out of a cdef function and no way to pass a 
-        # vector into a Python def function, so we have to repeat code. ARGGG!
-        cdef vector[cHandle].iterator c_handle_iter
-        cdef cHandle current_c_handle
-        c_handle_iter = handle_vector.begin()
-        while c_handle_iter != handle_vector.end():
-            current_c_handle = deref(c_handle_iter)
-            temp_handle = Handle(current_c_handle.value())
-            yield Atom(temp_handle,self)
-            inc(c_handle_iter)
-
-    def get_predicates_for(self, Atom target, Atom predicate):
-        cdef vector[cHandle] handle_vector
-        cdef Handle target_h = target.h
-        cdef Handle predicate_h = predicate.h
-        handle_vector = c_get_predicates_for(deref(target_h.h), deref(predicate_h.h))
-        return convert_handle_seq_to_python_list(handle_vector,self)
-
-    def xget_predicates_for(self, Atom target, Atom predicate):
-        cdef vector[cHandle] handle_vector
-        cdef Handle target_h = target.h
-        cdef Handle predicate_h = predicate.h
-        handle_vector = c_get_predicates_for(deref(target_h.h), deref(predicate_h.h))
-        
         # This code is the same for all the x iterators but there is no
         # way in Cython to yield out of a cdef function and no way to pass a 
         # vector into a Python def function, so we have to repeat code. ARGGG!

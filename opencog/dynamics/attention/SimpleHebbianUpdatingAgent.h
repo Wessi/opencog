@@ -22,6 +22,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+
 #ifndef SIMPLEHEBBIANPDATINGAGENT_H_
 #define SIMPLEHEBBIANPDATINGAGENT_H_
 
@@ -38,19 +39,10 @@ using namespace opencog;
  */
 class SimpleHebbianUpdatingAgent: public virtual opencog::HebbianUpdatingAgent {
 public:
-    virtual const ClassInfo& classinfo() const
-    {
-        return info();
-    }
-    static const ClassInfo& info()
-    {
-        static const ClassInfo _ci("opencog::SimpleHebbianUpdatingAgent");
-        return _ci;
-    }
-    SimpleHebbianUpdatingAgent(CogServer& cs);
-    virtual ~SimpleHebbianUpdatingAgent();
-    void hebbianUpdatingUpdate();
-    float targetConjunction(HandleSeq handles);
+	SimpleHebbianUpdatingAgent(CogServer& cs);
+	virtual ~SimpleHebbianUpdatingAgent();
+	void hebbianUpdatingUpdate();
+	float targetConjunction(HandleSeq handles);
 };
 
 #endif /* SIMPLEHEBBIANPDATINGAGENT_H_*/

@@ -5,8 +5,7 @@ OPENCOG_ADD_ATOM_TYPES(atom_types.script
 	atom_types.h
 	atom_types.definitions
 	atom_types.inheritance
-	embodiment_types.scm
-	embodiment_types.pyx)
+	embodiment_types.scm)
 ADD_CUSTOM_TARGET(embodiment_atom_types DEPENDS atom_types.h)
 
 # The atom_types.h file is written to the build directory
@@ -20,7 +19,7 @@ ADD_DEPENDENCIES(embodiment-types spacetime_atom_types)
 ADD_DEPENDENCIES(embodiment-types embodiment_atom_types)
 
 TARGET_LINK_LIBRARIES (embodiment-types
-	${ATOMSPACE_LIBRARY}
+	atomspace
 )
 
 IF (HAVE_EMBODIMENT)
@@ -34,8 +33,8 @@ IF (HAVE_EMBODIMENT)
 
 	TARGET_LINK_LIBRARIES (AtomSpaceExtensions
 		embodiment-types
-		${ATOMSPACE_query_LIBRARY}
+		query
 		spacetime
-		${ATOMSPACE_LIBRARY}
+		atomspace
 	)
 ENDIF (HAVE_EMBODIMENT)

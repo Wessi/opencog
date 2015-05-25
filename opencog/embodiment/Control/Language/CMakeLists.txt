@@ -11,7 +11,7 @@ ADD_DEPENDENCIES(Language nlp_atom_types)
 ADD_DEPENDENCIES(Language embodiment_atom_types)
 
 TARGET_LINK_LIBRARIES (Language
-	${ATOMSPACE_LIBRARY}
+	atomspace
 	embodiment-types
 )
 

@@ -50,14 +50,15 @@ public:
     virtual bool clause_match(const Handle& pattrn_link_h, const Handle& grnd_link_h);
     virtual bool grounding(const std::map<Handle, Handle> &var_soln,
                            const std::map<Handle, Handle> &pred_soln);
-    virtual bool initiate_search(PatternMatchEngine* pPME,
-                                const Variables& vars,
-                                const Pattern& pat);
+    virtual void perform_search(PatternMatchEngine* pPME,
+                                const std::set<Handle>& vars,
+                                const HandleSeq& clauses,
+                                const HandleSeq& negations);
 
     std::map<Handle, std::vector<std::map<Handle, Handle> > > m_results;   // store the PM results
 
 private:
-    virtual Handle find_starter(const Handle&, size_t&, Handle&, size_t&);
+    virtual Handle find_starter(Handle, size_t&, Handle&, size_t&);
 
     std::set<Handle> m_vars;   // store nodes that are variables
 

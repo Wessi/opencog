@@ -1,24 +1,24 @@
 #include <opencog/util/Logger.h>
 
-#include "ExampleModule.h"
+#include "RosModule.h"
 
 using namespace opencog;
 
 // load/unload functions for the Module interface
-DECLARE_MODULE(ExampleModule)
+DECLARE_MODULE(RosModule)
 
-ExampleModule::ExampleModule(CogServer& cs) : Module(cs)
+RosModule::RosModule(CogServer& cs) : Module(cs)
 {
-    logger().info("[ExampleModule] constructor");
+    logger().info("[RosModule] constructor");
 }
 
-ExampleModule::~ExampleModule()
+RosModule::~RosModule()
 {
-    logger().info("[Wessi ExampleModule] destructor");
+    logger().info("[Wessi RosModule] destructor");
 }
 
-void ExampleModule::init()
+void RosModule::init()
 {
-    logger().info("[ExampleModule] init");
+    logger().info("[RosModule] init");
 }
 

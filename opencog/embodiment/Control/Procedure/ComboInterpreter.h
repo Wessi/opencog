@@ -24,18 +24,16 @@
 #ifndef _COMBO_INTERPRETER_H
 #define _COMBO_INTERPRETER_H
 
-#include <vector>
-#include <boost/noncopyable.hpp>
-
-#include <moses/comboreduct/combo/vertex.h>
-#include <moses/comboreduct/combo/variable_unifier.h>
-#include <opencog/server/CogServer.h>
+#include <opencog/comboreduct/combo/vertex.h>
+#include <opencog/comboreduct/combo/variable_unifier.h>
 #include <opencog/embodiment/Control/PerceptionActionInterface/PAI.h>
 #include <opencog/embodiment/WorldWrapper/PAIWorldWrapper.h>
-#include <opencog/embodiment/Control/MessagingSystem/NetworkElement.h>
-
 #include "RunningProcedureId.h"
 #include "RunningComboProcedure.h"
+#include <vector>
+#include <boost/noncopyable.hpp>
+#include <opencog/server/CogServer.h>
+#include <opencog/embodiment/Control/MessagingSystem/NetworkElement.h>
 
 namespace opencog { namespace Procedure {
 
